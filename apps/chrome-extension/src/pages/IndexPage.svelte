@@ -12,10 +12,17 @@
 	async function toggleRecording() {
 		sendMessageToContentScript({ command: 'toggle-recording' });
 	}
-
 	// --- Local Shortcuts ---
 
 	function handleKeyDown(event: KeyboardEvent) {
+		console.warn("event.code keydown occurred", event.code, $recordingState)
+		if (event.code !== 'Space') return;
+		event.preventDefault(); // Prevent scrolling
+		toggleRecording();
+	}
+
+	function handleKeyUp(event: KeyboardEvent) {
+		console.warn("event.code keyup occurred", event.code, $recordingState)
 		if (event.code !== 'Space') return;
 		event.preventDefault(); // Prevent scrolling
 		toggleRecording();
@@ -43,7 +50,7 @@
 	});
 </script>
 
-<svelte:window on:keydown={handleKeyDown} />
+<svelte:window on:keydown={handleKeyDown} on:keyup={handleKeyUp} />
 
 <div class="flex min-h-screen flex-col items-center justify-center space-y-4">
 	<h1 class="text-4xl font-semibold text-gray-700">Whispering</h1>

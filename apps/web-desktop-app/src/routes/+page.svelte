@@ -7,7 +7,15 @@
 	import { AdjustmentsHorizontalIcon, ClipboardIcon, KeyIcon, KeyboardIcon } from 'ui/icons';
 
 	function handleKeyDown(event: KeyboardEvent) {
-		if (event.code !== 'Space') return;
+		if (event.code !== 'CTRL+T' || $recordingState === "recording") return;
+		console.warn("dapp event.code keydown occurred", event.code, $recordingState)
+		event.preventDefault(); // Prevent scrolling
+		toggleRecording();
+	}
+
+	function handleKeyUp(event: KeyboardEvent) {
+		if (event.code !== 'CTRL+T' || $recordingState === "idle") return;
+		console.warn("dapp event.code keyup occurred", event.code, $recordingState)
 		event.preventDefault(); // Prevent scrolling
 		toggleRecording();
 	}
@@ -18,12 +26,12 @@
 	}
 </script>
 
-<svelte:window on:keydown={handleKeyDown} />
+<svelte:window on:keydown={handleKeyDown} on:keyup={handleKeyUp} />
 
 <div class="flex min-h-screen flex-col items-center justify-center space-y-4">
 	<h1 class="text-4xl font-semibold text-gray-700">Whispering</h1>
 
-	<ToggleRecordingIcon recordingState={$recordingState} on:click={toggleRecording} />
+	<ToggleRecordingIcon recordingState={$recordingState} on:click={toggleRecording} on:unclick={toggleRecording} />
 
 	<div>
 		<label for="transcripted-text" class="sr-only mb-2 block text-gray-700">

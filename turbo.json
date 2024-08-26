@@ -1,14 +1,17 @@
 {
 	"$schema": "https://turbo.build/schema.json",
+	"globalPassThroughEnv": ["DEPLOY_ENV"],
 	"pipeline": {
 		"build": {
 			"dependsOn": ["^build"],
-			"outputs": [".svelte-kit/**", "dist/**", ".build/**"]
+			"outputs": [".svelte-kit/**", "dist/**", ".build/**"],
+			"passThroughEnv": ["DEPLOY_ENV"]
 		},
 		"lint": {},
 		"dev": {
 			"cache": false,
 			"persistent": true
 		}
-	}
+	},
+	"globalEnv": ["DEPLOY_ENV"]
 }

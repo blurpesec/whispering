@@ -9,7 +9,7 @@ type Options = {
 const initialOptions: Options = {
 	copyToClipboard: true,
 	pasteContentsOnSuccess: false,
-	currentGlobalShortcut: 'CommandOrControl+Shift+;'
+	currentGlobalShortcut: 'Control+A'
 };
 
 export const options = createStoreSyncedWithStorage<Options>({

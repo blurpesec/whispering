@@ -37,8 +37,8 @@
 		"commands": {
 			"toggle-recording": {
 				"suggested_key": {
-					"default": "Ctrl+Shift+X",
-					"mac": "Command+Shift+X"
+					"default": "Ctrl+A",
+					"mac": "Ctrl+A"
 				},
 				"description": "Toggle recording"
 			}

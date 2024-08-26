@@ -19,11 +19,13 @@ export type MessageToContentScriptRequest =
 			command: 'toggle-recording';
 	  }
 	| { command: 'switch-chatgpt-icon'; icon: Icon };
+// let isHotKeyEngaged = false;
 /** Sends a message to the content script, captured in {@link ~contents/globalToggleRecording}. */
 export async function sendMessageToContentScript(message: MessageToContentScriptRequest) {
 	const [tab] = await chrome.tabs.query({
 		active: true,
 		lastFocusedWindow: true
 	});
+	// isHotKeyEngaged = !isHotKeyEngaged;
 	chrome.tabs.sendMessage(tab.id, message);
 }

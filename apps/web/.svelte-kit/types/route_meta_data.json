@@ -1,0 +1,21 @@
+{
+	"/(config)": [
+		"src/routes/+layout.ts"
+	],
+	"/(app)": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.ts"
+	],
+	"/": [
+		"src/routes/+layout.ts"
+	],
+	"/(config)/recordings": [
+		"src/routes/+layout.ts"
+	],
+	"/(config)/settings": [
+		"src/routes/+layout.ts"
+	],
+	"/(config)/shortcut": [
+		"src/routes/+layout.ts"
+	]
+}
