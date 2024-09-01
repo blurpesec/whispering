@@ -26,6 +26,7 @@ async function getMicrophonePermissions() {
 	try {
 		return await navigator.mediaDevices.getUserMedia({ audio: true });
 	} catch (error) {
+		console.error('Error getting microphone permissions: ', error);
 		chrome.runtime.openOptionsPage();
 	}
 }

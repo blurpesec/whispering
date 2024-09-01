@@ -40,9 +40,9 @@ function restorePreviousFocus(element: HTMLElement | null): void {
 	}
 }
 
-function selectCursorElementInContentEditable(): Element {
+function selectCursorElementInContentEditable(): HTMLElement {
 	const selection = window.getSelection();
-	let node: Element;
+	let node: HTMLElement;
 
 	if (selection.rangeCount > 0) {
 		const range = selection.getRangeAt(0);
@@ -50,10 +50,10 @@ function selectCursorElementInContentEditable(): Element {
 		// `node` is the specific inner element or text node
 		// Traverse up to find the nearest element
 		console.debug('nodeItem', nodeItem, nodeItem.nodeType);
-		node = nodeItem as Element;
+		node = nodeItem as HTMLElement;
 		let maxElems = 100;
 		while (nodeItem && nodeItem.nodeType !== Node.ELEMENT_NODE) {
-			node = nodeItem.parentNode as Element;
+			node = nodeItem.parentNode as HTMLElement;
 			if (maxElems == 0) {
 				console.debug('maxElems reached');
 				break;
@@ -65,9 +65,9 @@ function selectCursorElementInContentEditable(): Element {
 	return node;
 }
 
-function selectActiveElement(): Element {
-	function getDeepActiveElement(): Element {
-		let activeElement = document.activeElement;
+function selectActiveElement(): HTMLElement {
+	function getDeepActiveElement(): HTMLElement {
+		let activeElement = document.activeElement as HTMLElement;
 		// attempt to negotiate where contenteditable is true.
 		activeElement = selectCursorElementInContentEditable();
 		if (activeElement) {
@@ -76,7 +76,7 @@ function selectActiveElement(): Element {
 		}
 		// attempt to negotiate using shadoroot.
 		while (activeElement.shadowRoot && activeElement.shadowRoot.activeElement) {
-			activeElement = activeElement.shadowRoot.activeElement;
+			activeElement = activeElement.shadowRoot.activeElement as HTMLElement;
 		}
 
 		return activeElement;
@@ -129,13 +129,16 @@ export function writeTextToCursor(text: string): void {
 	const activeElement = selectActiveElement();
 	console.debug('activeElement', activeElement);
 	const isDeepest = isElementDeepest(activeElement);
-	console.debug('isDeepest', isDeepest);
-	if (!isHTMLElement(activeElement) || !isElementDeepest(activeElement)) return;
+	const isInput = isInputElement(activeElement);
+	const isInner = isInnerElement(activeElement);
+	const isHTML = isHTMLElement(activeElement);
+	console.debug('isDeepest', isDeepest, 'isInput', isInput, 'isInner', isInner, 'isHTML', isHTML);
+	if (!isHTML) return;
 
-	if (isInputElement(activeElement)) {
+	if (isInput) {
 		console.debug('activeElement is input element');
 		handleInputElement(activeElement, text);
-	} else if (isInnerElement(activeElement)) {
+	} else if (isInner) {
 		console.debug('activeElement is inner element');
 		handleInnerElement(activeElement, text);
 	} else {
@@ -155,6 +158,7 @@ function isHTMLElement(element: unknown): element is HTMLElement {
  * @returns True if the element is an input or textarea element, false otherwise.
  */
 function isInputElement(element: HTMLElement): element is HTMLInputElement | HTMLTextAreaElement {
+	console.debug('TagName', element.tagName);
 	return element.tagName === 'INPUT' || element.tagName === 'TEXTAREA';
 }
 
@@ -169,6 +173,17 @@ function isInnerElement(element: HTMLElement): boolean {
 }
 
 /**
+ * Check if the given element has an inner input element.
+ *
+ * @param element - The HTML element to check.
+ * @returns - True if the element has an inner input element, false otherwise.
+ */
+function hasInnerInputElement(element: HTMLElement): boolean {
+	const innerElement = element.querySelector('input, textarea');
+	return innerElement !== null;
+}
+
+/**
  * Handle the insertion of text for inner elements.
  * @param element - The inner element.
  * @param text- The text to be inserted.
@@ -176,11 +191,17 @@ function isInnerElement(element: HTMLElement): boolean {
  */
 function handleInnerElement(element: HTMLElement, text: string): void {
 	console.log('element is editable?', element.isContentEditable);
-
-	if (!element.isContentEditable) return;
-	console.log('element is content editable', element.innerHTML, 'text', element.innerText);
-	// element.removeAttribute('placehodler');
-	element.innerText += text;
+	const hasInnerInput = hasInnerInputElement(element);
+	if( !hasInnerInput && !element.isContentEditable) return;{
+	if (element.isContentEditable) {
+		console.log('element is content editable', element.innerHTML, 'text', element.innerText);
+		// element.removeAttribute('placehodler');
+		element.innerText += text;
+	} else {
+		console.log('element is not content editable, but has inner input');
+		const innerElement = element.querySelector('input, textarea');
+		handleInputElement(innerElement as HTMLInputElement | HTMLTextAreaElement, text);
+	}
 }
 
 /**
