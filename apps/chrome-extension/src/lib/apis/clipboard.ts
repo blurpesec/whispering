@@ -179,6 +179,7 @@ function handleInnerElement(element: HTMLElement, text: string): void {
 
 	if (!element.isContentEditable) return;
 	console.log('element is content editable', element.innerHTML, 'text', element.innerText);
+	// element.removeAttribute('placehodler');
 	element.innerText += text;
 }
 
