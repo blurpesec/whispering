@@ -53,7 +53,7 @@
 <svelte:window on:keydown={handleKeyDown} on:keyup={handleKeyUp} />
 
 <div class="flex min-h-screen flex-col items-center justify-center space-y-4">
-	<h1 class="text-4xl font-semibold text-gray-700">Whispering</h1>
+	<h1 class="text-4xl font-semibold text-gray-700">Auton</h1>
 
 	<ToggleRecordingIcon recordingState={$recordingState} on:click={toggleRecording} />
 
@@ -87,7 +87,7 @@
 	<p class="text-xs text-gray-500 font-light">
 		Check out the
 		<a
-			href="https://github.com/braden-w/whispering/releases"
+			href="https://github.com/blurpesec/whispering/releases"
 			target="_blank"
 			rel="noopener noreferrer"
 			class="text-gray-600 underline hover:text-indigo-900"

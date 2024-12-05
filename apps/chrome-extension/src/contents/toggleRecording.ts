@@ -32,7 +32,6 @@ export async function toggleOff({
 		document.body.style.cursor = 'wait';
 		audioSrc.set(URL.createObjectURL(audioBlob));
 		switchIcon('arrowsCounterclockwise');
-		console.debug('transcribing audio');
 		await recordingState.set('transcribing');
 		if (!cancelTranscription) {
 			console.debug('transcription not cancelled');

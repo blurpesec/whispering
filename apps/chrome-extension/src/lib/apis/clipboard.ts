@@ -192,10 +192,10 @@ function hasInnerInputElement(element: HTMLElement): boolean {
 function handleInnerElement(element: HTMLElement, text: string): void {
 	console.log('element is editable?', element.isContentEditable);
 	const hasInnerInput = hasInnerInputElement(element);
-	if( !hasInnerInput && !element.isContentEditable) return;{
+	if (!hasInnerInput && !element.isContentEditable) return;
 	if (element.isContentEditable) {
-		console.log('element is content editable', element.innerHTML, 'text', element.innerText);
-		// element.removeAttribute('placehodler');
+		console.log('element is content editable with text', element.innerText);
+		element.removeAttribute('placeholder');
 		element.innerText += text;
 	} else {
 		console.log('element is not content editable, but has inner input');

@@ -1,9 +1,9 @@
 {
-	"name": "whispering",
-	"displayName": "Whispering",
+	"name": "auton",
+	"displayName": "Auton",
 	"version": "3.4.0",
 	"description": "Seamlessly integrate voice-to-text transcriptions on ChatGPT and anywhere on the web—powered by OpenAI's Whisper API.",
-	"author": "Braden Wong",
+	"author": "Michael Hahn",
 	"packageManager": "pnpm@7.5.0",
 	"scripts": {
 		"dev": "plasmo dev",
