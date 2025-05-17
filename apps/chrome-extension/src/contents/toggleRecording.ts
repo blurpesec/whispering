@@ -10,9 +10,13 @@ import { transcribeAudioWithWhisperApi } from '~lib/transcribeAudioWithWhisperAp
 import { sendMessageToBackground } from '~lib/utils/messaging';
 
 type ToggleRecordingOptions = {
+	activeLocation: { element: HTMLElement | null; x: number; y: number };
 	switchIcon: (icon: Icon) => void;
 	/** Called after text is successfully transcribed and (possibly) copied to clipboard */
-	onSuccessfulTranscription: (text: string) => void;
+	onSuccessfulTranscription: (
+		text: string,
+		activeLocation: { element: HTMLElement | null; x: number; y: number }
+	) => void;
 };
 
 type ToggleRecordingOffOptions = {
@@ -21,6 +25,7 @@ type ToggleRecordingOffOptions = {
 } & ToggleRecordingOptions;
 
 export async function toggleOff({
+	activeLocation,
 	switchIcon,
 	apiKeyValue,
 	onSuccessfulTranscription,
@@ -39,7 +44,7 @@ export async function toggleOff({
 			console.debug('transcription:', text);
 			writeTextToClipboardIfEnabled(text);
 			// outputText.set(text);
-			onSuccessfulTranscription(text);
+			onSuccessfulTranscription(text, activeLocation);
 		} else {
 			console.debug(
 				`Transcription cancelled due to timeout of ${transcriptionTimeout / 1000} seconds`
@@ -57,6 +62,7 @@ export async function toggleOff({
 let timer: NodeJS.Timeout | undefined;
 
 export async function toggleRecording({
+	activeLocation,
 	switchIcon,
 	onSuccessfulTranscription
 }: ToggleRecordingOptions): Promise<void> {
@@ -86,6 +92,7 @@ export async function toggleRecording({
 			cancel = true;
 			console.debug(`Transcription exceeded ${transcriptionTimeout / 1000} seconds, cancelling`);
 			return await toggleOff({
+				activeLocation,
 				switchIcon,
 				apiKeyValue,
 				onSuccessfulTranscription,
@@ -101,6 +108,7 @@ export async function toggleRecording({
 		return await toggleOff({
 			switchIcon,
 			apiKeyValue,
+			activeLocation,
 			onSuccessfulTranscription,
 			cancelTranscription: cancel
 		});

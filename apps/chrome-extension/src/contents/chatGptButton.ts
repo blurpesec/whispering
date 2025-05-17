@@ -11,11 +11,15 @@ export const config: PlasmoCSConfig = {
 chrome.runtime.onMessage.addListener(async function (message: MessageToContentScriptRequest) {
 	if (message.command === 'toggle-recording')
 		await toggleRecording({
+			activeLocation: { element: null, x: 0, y: 0 },
 			switchIcon: (icon) => {
 				sendMessageToBackground({ action: 'setExtensionIcon', icon });
 				switchMicrophoneButtonIcon(icon);
 			},
-			onSuccessfulTranscription: (text: string) => writeTextToCursor(text)
+			onSuccessfulTranscription: (
+				text: string,
+				activeLocation: { element: HTMLElement | null; x: number; y: number }
+			) => writeTextToCursor(text, activeLocation)
 		});
 });
 
@@ -70,6 +74,7 @@ function injectMicrophoneButtonIntoTextarea() {
 
 		button.addEventListener('click', async () => {
 			toggleRecording({
+				activeLocation: { element: null, x: 0, y: 0 },
 				onSuccessfulTranscription: (text) => setChatgptTextareaContent(text),
 				switchIcon: (icon) => {
 					sendMessageToBackground({ action: 'setExtensionIcon', icon });

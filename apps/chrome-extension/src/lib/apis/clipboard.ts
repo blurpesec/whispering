@@ -73,9 +73,11 @@ function selectActiveElement(): HTMLElement {
 		if (activeElement) {
 			console.debug('activeElement in select 2', activeElement);
 			return activeElement;
+		} else {
+			console.debug('activeElement in select 1', activeElement);
 		}
 		// attempt to negotiate using shadoroot.
-		while (activeElement.shadowRoot && activeElement.shadowRoot.activeElement) {
+		while (activeElement && activeElement.shadowRoot && activeElement.shadowRoot.activeElement) {
 			activeElement = activeElement.shadowRoot.activeElement as HTMLElement;
 		}
 
@@ -111,6 +113,7 @@ function isElementDeepest(activeElement: Element) {
 
 	// Function to check for focusable children
 	function hasFocusableChild(element) {
+		if (!element) return false;
 		const allChildren = element.querySelectorAll('*');
 		return Array.from(allChildren).some(isFocusable);
 	}
@@ -119,14 +122,88 @@ function isElementDeepest(activeElement: Element) {
 	return !hasFocusableChild(activeElement);
 }
 
+const findHiddenTextarea = () => {
+	return document.querySelector("textarea[aria-hidden='true']");
+};
+
+/**
+ * Render the provided text on the canvas at the specified coordinates.
+ * @param text - The text to be inserted.
+ * @param x - The x coordinate of the text.
+ * @param y - The y coordinate of the text.
+ */
+function renderTextOnCanvas(element, ctx, text, x, y) {
+	// const inputEvent = new InputEvent('input', { bubbles: true });
+	// ctx.font = '16px Arial';
+	// ctx.fillStyle = 'black';
+	// ctx.fillText(text, x, y);
+	// console.log('rendering to content element', element, text, x, y);
+	// element.textContent = text + ' nananana ';
+	// element.dispatchEvent(inputEvent);
+	const textarea = findHiddenTextarea();
+	console.log('textarea', textarea);
+	if (!textarea) {
+		console.error('Hidden textarea not found!');
+		return;
+	}
+
+	textarea.focus();
+	simulateTyping(element, text);
+
+	// focusEditableArea();
+}
+
+function simulateTyping(activeElement, text) {
+	// const editableElement = document.querySelector('contenteditable');
+
+	// if (!editableElement) {
+	// 	console.error('Editable element not found!');
+	// 	return;
+	// }
+
+	// Simulate each character as a separate keypress
+	for (const char of text) {
+		const keydownEvent = new KeyboardEvent('keydown', {
+			key: char,
+			code: `Key${char.toUpperCase()}`,
+			bubbles: true,
+			cancelable: true
+		});
+
+		const inputEvent = new InputEvent('input', {
+			inputType: 'insertText',
+			data: char,
+			bubbles: true,
+			cancelable: true
+		});
+
+		activeElement.dispatchEvent(keydownEvent);
+		activeElement.dispatchEvent(inputEvent);
+	}
+}
+
 /**
  * Insert the provided text at the cursor position in the currently active input element or append it
  * to the non-input active element.
  *
  * @param text - The text to be inserted.
  */
-export function writeTextToCursor(text: string): void {
-	const activeElement = selectActiveElement();
+export function writeTextToCursor(
+	text: string,
+	activeLocation: { element: HTMLElement | null; x: number; y: number }
+): void {
+	if (activeLocation.element && isCanvasElement(activeLocation.element)) {
+		console.debug('activeElement is canvas element');
+		const ctx = activeLocation.element.getContext('2d');
+		const rect = activeLocation.element.getBoundingClientRect();
+		const x = activeLocation.x - rect.left;
+		const y = activeLocation.y - rect.top;
+		if (ctx) {
+			renderTextOnCanvas(activeLocation.element, ctx, text, x, y);
+		}
+		return;
+	}
+	const activeElement = selectActiveElement() || activeLocation.element;
 	console.debug('activeElement', activeElement);
 	const isDeepest = isElementDeepest(activeElement);
 	const isInput = isInputElement(activeElement);
@@ -160,6 +237,15 @@ function isHTMLElement(element: unknown): element is HTMLElement {
 function isInputElement(element: HTMLElement): element is HTMLInputElement | HTMLTextAreaElement {
 	console.debug('TagName', element.tagName);
 	return element.tagName === 'INPUT' || element.tagName === 'TEXTAREA';
+}
+
+/**
+ *
+ * @param element - The HTML element to check.
+ * @returns True if the element is a canvas element, false otherwise.
+ */
+function isCanvasElement(element: HTMLElement): element is HTMLCanvasElement {
+	return element.tagName === 'CANVAS';
 }
 
 /**
