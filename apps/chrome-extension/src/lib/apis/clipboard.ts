@@ -140,7 +140,7 @@ function renderTextOnCanvas(element, ctx, text, x, y) {
 	// console.log('rendering to content element', element, text, x, y);
 	// element.textContent = text + ' nananana ';
 	// element.dispatchEvent(inputEvent);
-	const textarea = findHiddenTextarea();
+	const textarea = findHiddenTextarea() as HTMLTextAreaElement | null;
 	console.log('textarea', textarea);
 	if (!textarea) {
 		console.error('Hidden textarea not found!');
